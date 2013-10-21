@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+	<title>WareJects</title>
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="jquery-ui.js"></script>
+	<script type="text/javascript" src="tabs.js"></script>
+  <script type="text/javascript" src="main.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+
+<body>
+<button id="add_tab">Add a Project</button>
+ 
+<div id="dialog" title="Add a Project">
+  <form>
+    <fieldset class="ui-helper-reset">
+      <label for="tab_title">Project Name</label>
+      <input type="text" name="tab_title" id="tab_title" value="" class="ui-widget-content ui-corner-all" />
+      <label for="tab_content">Description</label>
+      <textarea name="tab_content" id="tab_content" class="ui-widget-content ui-corner-all"></textarea>
+      <label for="tab_lang">Languages</label>
+      <textarea name="tab_lang" id="tab_lang" class="ui-widget-content ui-corner-all"></textarea>
+      <label for="tab_mods">Modules, Libraries, Devices, etc.</label>
+      <textarea name="tab_mods" id="tab_mods" class="ui-widget-content ui-corner-all"></textarea>
+      <label for="tab_time">Starting Time</label>
+      <textarea name="tab_time" id="tab_time" class="ui-widget-content ui-corner-all"></textarea>
+    </fieldset>
+  </form>
+</div>
+ 
+<div id="tabs">
+  <ul>
+  </ul>
+</div>
+
+<button class="savebutton">Save</button> <button class="editbutton">Edit</button>
+
+</body>
+
+</html>
