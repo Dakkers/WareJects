@@ -405,6 +405,9 @@ button.ui-button::-moz-focus-inner {
 .ui-dialog .ui-dialog-titlebar {
 	padding: .4em 1em;
 	position: relative;
+	background-image: -webkit-radial-gradient(rgb(10,10,10), rgb(50,50,50));
+	background-color: transparent;
+	color: white;
 }
 .ui-dialog .ui-dialog-title {
 	float: left;
@@ -427,14 +430,20 @@ button.ui-button::-moz-focus-inner {
 	position: relative;
 	border: 0;
 	padding: .5em 1em;
-	background: none;
+	background-image: -webkit-radial-gradient(rgb(10,10,10), rgb(50,50,50));
 	overflow: auto;
+	color: white;
 }
+.ui-dialog  textarea {
+	background-color: transparent;
+	background-image: none;
+}
+
 .ui-dialog .ui-dialog-buttonpane {
 	text-align: left;
 	border-width: 1px 0 0 0;
-	background-image: none;
-	margin-top: .5em;
+	background-image: -webkit-radial-gradient(rgb(10,10,10), rgb(50,50,50));
+	margin-top: 0;
 	padding: .3em 1em .5em .4em;
 }
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
@@ -443,6 +452,7 @@ button.ui-button::-moz-focus-inner {
 .ui-dialog .ui-dialog-buttonpane button {
 	margin: .5em .4em .5em 0;
 	cursor: pointer;
+	border: none;
 }
 .ui-dialog .ui-resizable-se {
 	width: 12px;

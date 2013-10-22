@@ -43,24 +43,25 @@ $(function() {
 
 	// actual addTab function: adds new tab using the input from the form above
 	function addTab() {
-	  var label = tabTitle.val() || "Tab " + tabCounter,
+	  var label = tabTitle.val() || "Project " + tabCounter,
 	    id = "tabs-" + tabCounter,
 	    li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
 
+	    tabNameValHtml = label;
 		tabContentValHtml = tabContent.val() || "(None - no description? What's up with that?)";
 		tabLangValHtml = tabLang.val() || "(None)";
 		tabModsValHtml = tabMods.val() || "(None)";
 		tabTimeValHtml = tabTime.val() || "(None)";
 
-		tabContentHtml = "<h2 class='hdesc'>Rough Idea</h2><p class='pdesc'>" + tabContentValHtml;
+		tabNameHtml = "<h2 class='hname'>Project Title</h2><p class='pname'>" + tabNameValHtml + "</p>"
+		tabContentHtml = "<h2 class='hdesc'>Rough Idea</h2><p class='pdesc'>" + tabContentValHtml + "</p>";
 	    tabLangHtml = "<h2 class='hlang'>Languages</h2><p class='plang'>" + tabLangValHtml + "</p>";
 	    tabModsHtml = "<h2 class='hmods'>Modules, Libraries, Devices, etc.</h2><p class='pmods'>" + tabModsValHtml + "</p>";
 	    tabTimeHtml = "<h2 class='htime'>Starting Time</h2><p class='ptime'>" + tabTimeValHtml + "</p>"
-	    //tabButtonsHtml = '<button class="savebutton">Save</button> <button class="editbutton">Edit</button>'
 
 
 	  tabs.find( ".ui-tabs-nav" ).append( li );
-	  tabs.append( "<div id='" + id + "'>" + tabContentHtml + tabLangHtml + tabModsHtml + tabTimeHtml + "</div>" );
+	  tabs.append( "<div id='" + id + "'>" + tabNameHtml + tabContentHtml + tabLangHtml + tabModsHtml + tabTimeHtml + "</div>" );
 	  tabs.tabs( "refresh" );
 	  window.tabCounter++;
 	}

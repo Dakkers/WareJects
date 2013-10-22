@@ -34,33 +34,44 @@ function editingScript (id) {
 	hide the textarea tag and show the paragraph tags.*/
 	edit = !edit;
 	if (edit) {
+		//clicking the Done button
+		nametext = $(id).children('.editname').val();
 		desctext = $(id).children('.editdesc').val(); //get values of current textareas
 		langtext = $(id).children('.editlang').val();
 		modstext = $(id).children('.editmods').val();
 		timetext = $(id).children('.edittime').val();
 		$(".editbutton").text('Edit')
+		$(id).children(".editname").hide(1, setshowp(id, ".pname", nametext));
 		$(id).children(".editdesc").hide(1, setshowp(id, ".pdesc", desctext));  //call setshowp upon hiding
 		$(id).children(".editlang").hide(1, setshowp(id, ".plang", langtext));
 		$(id).children(".editmods").hide(1, setshowp(id, ".pmods", modstext));
 		$(id).children(".edittime").hide(1, setshowp(id, ".ptime", timetext));
-		$('.savebutton').removeAttr('disabled'); //do not allow saving while editing
+		$('.savebutton').removeAttr('disabled');
+		$("a[href='" + id + "']").text(nametext); //change tab name too
+		tabs.tabs("refresh");
 	}
 	else {
-		desctext = $(id).children(".pdesc").text(); //get values of current paragraphs
+		//clicking the Edit button
+		nametext = $(id).children(".pname").text(); //get values of current paragraphs
+		desctext = $(id).children(".pdesc").text();
 		langtext = $(id).children(".plang").text();
 		modstext = $(id).children(".pmods").text();
 		timetext = $(id).children(".ptime").text();
 		$(".editbutton").text('Done');
-		$('.savebutton').attr('disabled', 'true');
+		$('.savebutton').attr('disabled', 'true'); //do not allow saving while editing
 
 		if ($.inArray(id, editingHandler) === -1) {
-			$(id).children(".pdesc").hide(1, setDescTextarea(id, desctext));    //call setTextarea functions upon hiding
+			//first time pressing edit in this session
+			$(id).children(".pname").hide(1, setOtherTextarea(id, '.hname', 'editname', nametext)); //call setTextarea functions upon hiding
+			$(id).children(".pdesc").hide(1, setDescTextarea(id, desctext));
 			$(id).children(".plang").hide(1, setOtherTextarea(id, '.hlang', 'editlang', langtext));
 			$(id).children(".pmods").hide(1, setOtherTextarea(id, '.hmods', 'editmods', modstext));
 			$(id).children(".ptime").hide(1, setOtherTextarea(id, '.htime', 'edittime', timetext));
 			editingHandler.push(id);
 		}
 		else {
+			//not first time pressing edit in this session
+			$(id).children(".pname").hide(1, showTextarea(id, ".editname", nametext));
 			$(id).children(".pdesc").hide(1, showTextarea(id, ".editdesc", desctext));
 			$(id).children(".plang").hide(1, showTextarea(id, ".editlang", langtext));
 			$(id).children(".pmods").hide(1, showTextarea(id, ".editmods", modstext));
@@ -96,12 +107,13 @@ $(document).ready(function() {
 		//this runs if the user hasn't hit the savebutton yet; loads default WareJects info
 		label = "WareJects"; //proj title
 		li = $( tabTemplate.replace( /#\{href\}/g, "#tabs-0" ).replace( /#\{label\}/g, label ) );
+		tabNameHtml = "<h2 class='hname'>Project Title</h2><p class='pname'>WareJects</p>";
 		tabContentHtml = "<h2 class='hdesc'>Rough Idea</h2><p class='pdesc'>A Chrome extension that allows the user to manage their software and hardware project ideas. Should have a simple tabbing system (maybe refer to jQuery UI instead of building one from scratch?), a section for languages the user may write it in (if any), a section for tools (MakeyMakey, Raspberry Pi...) or modules (Flask, jQuery...), and a section for the description of the project.</p>";
 		tabLangHtml = "<h2 class='hlang'>Languages</h2><p class='plang'>JavaScript, HTML, CSS</p>";
 		tabModsHtml = "<h2 class='hmods'>Modules, Libraries, Devices, etc.</h2><p class='pmods'>jQuery, jQuery UI</p>";
 		tabTimeHtml = "<h2 class='htime'>Starting Time</h2><p class='ptime'>Sometime in October?</p>";
 		tabs.find( ".ui-tabs-nav" ).append( li );
-		tabs.append( "<div id='tabs-0'>" + tabContentHtml + tabLangHtml + tabModsHtml + tabTimeHtml + "</div>" );
+		tabs.append( "<div id='tabs-0'>" + tabNameHtml + tabContentHtml + tabLangHtml + tabModsHtml + tabTimeHtml + "</div>" );
 		$( "#tabs" ).tabs( "option", "active", 0 );
 		tabs.tabs( "refresh" );
 		localStorage["lastactivetab"] = "0";
@@ -118,18 +130,15 @@ $(document).ready(function() {
 			idhere = "tabs-" + i.toString();
 			label = projsInStorage[i]; //proj title
 			li = $( tabTemplate.replace( /#\{href\}/g, "#" + idhere ).replace( /#\{label\}/g, label ) );
-			tabContentValHtml = localStorage[label + "-_-desc"];
-			tabLangValHtml = localStorage[label + "-_-lang"];
-			tabModsValHtml = localStorage[label + "-_-mods"];
-			tabTimeValHtml = localStorage[label + "-_-time"]
 
-			tabContentHtml = "<h2 class='hdesc'>Rough Idea</h2><p class='pdesc'>" + tabContentValHtml + "</p>";
-			tabLangHtml = "<h2 class='hlang'>Languages</h2><p class='plang'>" + tabLangValHtml + "</p>";
-			tabModsHtml = "<h2 class='hmods'>Modules, Libraries, Devices, etc.</h2><p class='pmods'>" + tabModsValHtml + "</p>";
-			tabTimeHtml = "<h2 class='htime'>Starting Time</h2><p class='ptime'>" + tabTimeValHtml + "</p>";
+			tabNameHtml =  "<h2 class='hname'>Project Title</h2><p class='pname'>" + label + "</p>";
+			tabContentHtml = "<h2 class='hdesc'>Rough Idea</h2><p class='pdesc'>" + localStorage[label + "-_-desc"] + "</p>";
+			tabLangHtml = "<h2 class='hlang'>Languages</h2><p class='plang'>" + localStorage[label + "-_-lang"] + "</p>";
+			tabModsHtml = "<h2 class='hmods'>Modules, Libraries, Devices, etc.</h2><p class='pmods'>" + localStorage[label + "-_-mods"] + "</p>";
+			tabTimeHtml = "<h2 class='htime'>Starting Time</h2><p class='ptime'>" + localStorage[label + "-_-time"] + "</p>";
 
 			tabs.find( ".ui-tabs-nav" ).append( li );
-			tabs.append( "<div id='" + idhere + "'>" + tabContentHtml + tabLangHtml + tabModsHtml + tabTimeHtml + "</div>" );
+			tabs.append( "<div id='" + idhere + "'>" + tabNameHtml + tabContentHtml + tabLangHtml + tabModsHtml + tabTimeHtml + "</div>" );
 			tabs.tabs( "refresh" );
 			window.tabCounter++;
 		}
@@ -163,6 +172,7 @@ $(document).ready(function() {
 
 	$("#tabs").tabs({
 		activate: function (event, ui) {
+			//save what the last active tab was
 			localStorage["lastactivetab"] = $( "#tabs" ).tabs( "option", "active" ).toString();
 		}
 	})

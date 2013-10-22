@@ -4,86 +4,24 @@ general stuff
 ===============
 */
 
-body {min-width: 400px;}
+body {
+	width: 300px;
+	font-family: "Trebuchet MS", "Times New Roman", Serif;
+	background-image: -webkit-radial-gradient(rgb(50,50,50), black);
+	color: white;
+}
+
+h1 {
+	font-size: 30px;
+	margin: 0;
+	text-align: center;
+}
 
 ul {
-	margin: 0px;
-	padding: 0px;
+	padding: 0;
 }
 
-li {list-style-type: none;}
-
-/*
-===============
-top stuff
-===============
-*/
-
-#insertidhere {
-	margin: -5px 0px;
-	font-size: 12px;
-}
-
-
-/*
-===============
-main stuff (middle text)
-===============
-*/
-
-.pname, .plangs, .pmods, .pdesc, p {
-	font-family: "Trebuchet MS", "Times New Roman", Serif;
-	border-style: none;
-}
-
-.plangs, .pmods, .pdesc {font-size: 13px;}
-
-.plangs, .pmods {
-	display: inline;
-	width: 40%;
-	margin-top: -4px;
-}
-
-.pname {
-	font-size: 16px;
-	margin: -6px 0px;
-	width: 98.75%;
-}
-
-.plangs {
-	float: left;		
-}
-
-.pmods {
-	float: right;
-	text-align: right;
-}
-
-.pdesc {
-	border-color: transparent;
-	border-style: none;
-	width: 98.75%;
-	resize: none;
-	min-height: 75px;
-	max-height: 150px;
-}
-
-/*
-===============
-buttons
-===============
-*/
-
-.addproj {
-	float: right;
-	margin-bottom: 10px;
-}
-
-.editproj {
-	float: right;
-}
-
-.rmvproj {
-	float: right;
-	margin-bottom: 10px;
+li {
+	list-style-type: none;
+	padding-left: 10px;
 }

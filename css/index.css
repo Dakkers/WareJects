@@ -18,6 +18,8 @@
 
 #dialog input, #dialog textarea { 
 	width: 95%; 
+	background-color: transparent;
+	background-image: none;
 }
 
 #dialog #tab_content {
@@ -49,7 +51,6 @@ html {
 }
 
 body {
-    /*background-image: -webkit-linear-gradient(bottom, rgb(254,133,107) 24%, rgb(35,171,17) 62%);*/
     background-image: -webkit-radial-gradient(rgb(50,50,70), black);
     background-repeat: no-repeat;
     height: 100%;
@@ -67,8 +68,6 @@ body {
 
 .ui-tabs .ui-tabs-nav {
 	/*the nav bar*/
-	/*background-image: -webkit-linear-gradient(rgb(15,15,15), rgb(30,30,30));
-    background-repeat: no-repeat;*/
     background-image: none;
     background-color: transparent;
     border: 2px groove black;
@@ -82,12 +81,13 @@ body {
 }
 
 .ui-tabs a:hover {
+	/*hover over active tab (text, technically)*/
 	color: rgb(220,0,0);
 }
 
 .ui-tabs .ui-tabs-nav .ui-state-active {
 	/*active tab*/
-	background-image: -webkit-radial-gradient(rgb(40,25,25), black);
+	background-image: -webkit-radial-gradient(rgb(50,25,25), black);
 	opacity: 1.0;
 }
 
@@ -171,7 +171,7 @@ h2 {
 	float: right;
 	position: relative;
 	top: 10px;
-	
+
 	background-image: -webkit-radial-gradient(rgb(30,30,30), rgb(0,0,0));
 	padding: 2px 5px;
 	border-radius: 3px;
