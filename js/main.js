@@ -40,7 +40,7 @@ function editingScript (id) {
 		langtext = $(id).children('.editlang').val();
 		modstext = $(id).children('.editmods').val();
 		timetext = $(id).children('.edittime').val();
-		$(".editbutton").text('Edit')
+		$(".editbutton").text('Edit');
 		$(id).children(".editname").hide(1, setshowp(id, ".pname", nametext));
 		$(id).children(".editdesc").hide(1, setshowp(id, ".pdesc", desctext));  //call setshowp upon hiding
 		$(id).children(".editlang").hide(1, setshowp(id, ".plang", langtext));

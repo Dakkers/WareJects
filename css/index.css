@@ -40,28 +40,36 @@
 	cursor: pointer; 
 }
 
+
 /*
 ===============
 =general stuff
 ===============
 */
+@import url("http://fonts.googleapis.com/css?family=Ubuntu+Condensed");
+*{
+	-webkit-box-sizing: border-box;
+}
 
 html {
 	height: 100%;
 }
 
 body {
-    background-image: -webkit-radial-gradient(rgb(50,50,70), black);
-    background-repeat: no-repeat;
+    background-color: rgba(0,0,0,0.8);
     height: 100%;
-	font-family: "Trebuchet MS", "Times New Roman", Serif;
 	margin: auto;
 	width: 80%;
 }
 
-
+/*
+===============
+=tabs
+===============
+*/
 .ui-tabs  {
 	/*entire project*/
+	font: 18px normal 'Ubuntu Condensed', sans-serif;
 	background-image: -webkit-radial-gradient(rgb(50,50,55), black);
     background-repeat: no-repeat;
 }
@@ -70,24 +78,25 @@ body {
 	/*the nav bar*/
     background-image: none;
     background-color: transparent;
-    border: 2px groove black;
+    border-top: 0;
+    border-bottom: 1px groove black;
 }
 
 .ui-tabs .ui-tabs-nav li {
-	/*unactive tabs*/
-	background-image: -webkit-radial-gradient(black, rgb(50,25,25));
+	/*inactive tabs*/
+	background-image: -webkit-radial-gradient(black, rgb(25,25,25));
 	opacity: 0.4;
 	font-size: 16px;
 }
 
 .ui-tabs a:hover {
 	/*hover over active tab (text, technically)*/
-	color: rgb(220,0,0);
+	color: rgb(125,125,125);
 }
 
 .ui-tabs .ui-tabs-nav .ui-state-active {
 	/*active tab*/
-	background-image: -webkit-radial-gradient(rgb(50,25,25), black);
+	background-image: -webkit-radial-gradient(rgb(25,25,25), black);
 	opacity: 1.0;
 }
 
@@ -95,16 +104,9 @@ body {
 	border-color: black;
 }
 
-
 .ui-tabs .ui-state-active a {
 	/*project name text*/
-	color: rgb(140,0,0);
-	font-weight: bold;
-    /*text-shadow:
-    -1px -1px  0.05px rgba(200,200,200, 0.5),
-    1px -1px  0.05px rgba(200,200,200, 0.5),
-    -1px 1px  0.05px rgba(200,200,200, 0.5),
-    1px 1px  0.05px rgba(200,200,200, 0.5);*/
+	color: grey;
 }
 
 
@@ -113,35 +115,34 @@ body {
 =text stuff
 ===============
 */
-
-
 h2 {
 	font-size: 18px;
 	margin-top: -10px;
-	text-shadow: -1px -1px 10px rgba(150,150,150,0.15);
-	color: rgb(0,100,100);	
+	margin-left: -14px;
+	color: rgb(0,125,125);
+	font-weight: normal;
 }
 
 #tabs {
 	padding-bottom: 30px;
 }
 
-
 #tabs p {
 	font-size: 16px;
 	margin-top: -14px;
+	margin-left: -8px;
 	padding-bottom: 15px;
 	color: rgb(150,150,150);
 }
+
 
 /*
 ===============
 =textarea stuff
 ===============
 */
-
 #tabs textarea {
-	font-size: 16px;
+	font: 16px normal 'Ubuntu Condensed', sans-serif;
 	margin: -14px 0 17px 0;
 	resize: none;
 	width: 100%;
@@ -157,25 +158,26 @@ h2 {
 =button stuff
 ===============
 */
-
 #add_tab {
 	border: 0;
-	font-family: "Trebuchet MS", "Times New Roman", Serif;
-	border-radius: 0px;
-	font-size: 20px;
 }
 
 .editbutton, .savebutton {
-	font-family: "Trebuchet MS", "Times New Roman", Serif;
-	font-size: 20px;
 	float: right;
 	position: relative;
 	top: 10px;
-
 	background-image: -webkit-radial-gradient(rgb(30,30,30), rgb(0,0,0));
 	padding: 2px 5px;
-	border-radius: 3px;
 	box-shadow: 0 0 0 0;
 	border: 1px groove rgba(150,150,150,0.5);
 	color: rgb(75,75,75);
+}
+
+#add_tab, .editbutton, .savebutton {
+	font: 20px normal 'Ubuntu Condensed', sans-serif;
+	border-radius: 0px;
+}
+
+#add_tab:hover, .editbutton:hover, .savebutton:hover {
+	color: grey;
 }
