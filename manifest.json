@@ -1,6 +1,6 @@
 {
  "name": "WareJects",
- "version": "1.0",
+ "version": "1.1",
  "description": "Manage your software and hardware project ideas.",
 
  "permissions": [ "tabs", "https://*/*", "http://*/*"],
@@ -16,7 +16,11 @@
  "minimum_chrome_version": "17",
 
  "browser_action": {
-  "default_icon": "icon.png",
+  "default_icon": "logo.png",
   "default_popup": "popup.html"
+ },
+
+ "icons": {
+ 	"128": "logo.png"
  }
 }

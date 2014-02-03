@@ -5,7 +5,7 @@ tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-c
 
 function setshowp (id, classname, textval) {
 	//sets the paragraph tag and shows it
-	$(id).children(classname).text(textval);
+	$(id).children(classname).html(textval.replace(/\n/g, "<br>"));
 	$(id).children(classname).show(1, function () {});
 };
 
@@ -35,11 +35,11 @@ function editingScript (id) {
 	edit = !edit;
 	if (edit) {
 		//clicking the Done button
-		nametext = $(id).children('.editname').val();
-		desctext = $(id).children('.editdesc').val(); //get values of current textareas
-		langtext = $(id).children('.editlang').val();
-		modstext = $(id).children('.editmods').val();
-		timetext = $(id).children('.edittime').val();
+		var nametext = $(id).children('.editname').val();
+		var desctext = $(id).children('.editdesc').val(); //get values of current textareas
+		var langtext = $(id).children('.editlang').val();
+		var modstext = $(id).children('.editmods').val();
+		var timetext = $(id).children('.edittime').val();
 		$(".editbutton").text('Edit');
 		$(id).children(".editname").hide(1, setshowp(id, ".pname", nametext));
 		$(id).children(".editdesc").hide(1, setshowp(id, ".pdesc", desctext));  //call setshowp upon hiding
@@ -52,11 +52,11 @@ function editingScript (id) {
 	}
 	else {
 		//clicking the Edit button
-		nametext = $(id).children(".pname").text(); //get values of current paragraphs
-		desctext = $(id).children(".pdesc").text();
-		langtext = $(id).children(".plang").text();
-		modstext = $(id).children(".pmods").text();
-		timetext = $(id).children(".ptime").text();
+		var nametext = $(id).children(".pname").text(); //get values of current paragraphs
+		var desctext = $(id).children(".pdesc").text();
+		var langtext = $(id).children(".plang").text();
+		var modstext = $(id).children(".pmods").text();
+		var timetext = $(id).children(".ptime").text();
 		$(".editbutton").text('Done');
 		$('.savebutton').attr('disabled', 'true'); //do not allow saving while editing
 
