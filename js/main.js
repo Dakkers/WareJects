@@ -120,7 +120,7 @@ $(window).load(function() {
 			$("#btn-edit").text('Edit');
 			for (var i=0; i<boxes.length; i++) {
 				var box = boxes[i];
-				var ptag = "#"+idnumber+" > .proj-"+box, tatag = "#"+idnumber+" > .proj-"+box+"-ta";
+				var ptag = "#"+thisid+" > .proj-"+box, tatag = "#"+thisid+" > .proj-"+box+"-ta";
 				$(ptag).html($(tatag).val().replace(/\n/g, "<br>"));
 				$(tatag).hide();
 				$(ptag).show();
@@ -134,9 +134,10 @@ $(window).load(function() {
 	});
 
 
-	$("#btn-save").click(function() {
+	$("#btn-save").on('click', function() {
 		//add stuff to localStorage
 		$(".proj").each(function() {
+			console.log(this);
 			var projID = $(this).attr('id');
 			var tt = $("#"+projID+ " > .proj-tt").text(), desc = $("#"+projID+" > .proj-desc").text(), lng = $("#"+projID+" > .proj-lng").text();
 			var mod = $("#"+projID+" > .proj-mod").text(), time = $("#"+projID+" > .proj-time").text();
@@ -145,7 +146,7 @@ $(window).load(function() {
 	});
 
 
-	$("#btn-add").click(function() {
+	$("#btn-add").on('click', function() {
 		//make the input field slide down when "Add" button is pressed
 		$("#proj-crt").slideDown(400);
 	});
@@ -154,12 +155,19 @@ $(window).load(function() {
 	$("#btn-crt").on('click', function() {
 		/*This is for when the user creates a project, i.e. presses "Create".*/
 
+		//temporarily disable Add/Create buttons
+		$("#btn-crt").attr('disabled', 'disabled');
+		$("#btn-add").attr('disabled', 'disabled');
+
 		//grab input vales and create content for div, also update maxID each creation
 		maxID = Math.max.apply(Math, IDnums);
 		var tt = $("#proj-crt-tt").val(), desc = $("#proj-crt-desc").val(), lng = $("#proj-crt-lng").val();
 		var mod = $("#proj-crt-mod").val(), time = $("#proj-crt-time").val();
 		var projID = (maxID + 1).toString();
+		IDnums.push(parseInt(projID));
 		var contenttobeadded = proj_div_tag(tt, desc, lng, mod, time, false, null);
+
+		console.log(maxID); console.log(IDnums);
 
 		//create list item, slide it down, give it a proper ID
 		$("#proj-list").append(proj_li_tag(tt, false, null));
@@ -180,11 +188,12 @@ $(window).load(function() {
 			});
 		});
 
-		//make the inputs slide up and make them empty
+		//make the inputs slide up and make them empty, re-enable Create button
 		$("#proj-crt").slideUp(400, function() {
 			$(".proj-crt-in").each(function() {
 				$(this).val('');
 			});
+			$("#btn-crt").removeAttr('disabled');
 		});
 
 		//change active <li>
@@ -195,17 +204,16 @@ $(window).load(function() {
 		save(tt, desc, lng, mod, time, projID, data, IDs);
 		add_textarea_html(projID);
 		localStorage["warejects-activetab"] = (maxID+1).toString();
+		$("#btn-add").removeAttr('disabled');
 
 	});
 
-
-
 	
-	$("#proj-list").on('click', "li", function() {
+	$("#proj-list").on('click', "li", function(e) {
 		/*This is for when the user switches projects (clicks on the list).*/
 
-		//make sure user is not currently editing a project
-		if (!editing) {
+		//make sure user is not currently editing a project and that the X wasn't clicked instead
+		if ((!editing) && (e.target.className !== 'fui-cross')) {
 			var li_id = "#"+$(this).attr('id');     //e.g. #proj-li-3
 			var projid = li_id.replace("li-", "");  //e.g. #proj-3
 
@@ -223,9 +231,59 @@ $(window).load(function() {
 				});
 			}
 
-			//change the new last active tab
+			//change last active tab
 			activetab = projid.replace("#proj-", "");
 			localStorage["warejects-activetab"] = activetab;
+		}
+	});
+
+
+	
+	$(".fui-cross").on('click', function() {
+
+		//make sure there's more than 1 proj - FAILSAFES, FAILSAFES EVERYWHERE!
+		if ($('.proj').length !== 1) {
+
+			var li_id = "#"+$(this).parent().parent().attr('id');
+			var projid = li_id.replace("li-", "");
+
+			//if the currently active project is deleted...
+			if ($('.proj-active').attr('id') === projid.replace("#","")) {
+
+				//make it disappear before removal, and make a sibling appear
+				$(projid).slideUp(200, function() {
+					console.log('proj slide')
+					if ($(projid).is('#projs > div:last')) {
+						console.log('proj is indeed last');
+						$(projid).prev().slideDown(200).addClass('proj-active');
+					} else {
+						$(projid).next().slideDown(200).addClass('proj-active');
+					}
+
+					$(projid).remove();
+				});
+
+				//make its <li> disappear before removal, make sibling appear
+				$(li_id).slideUp(200, function() {
+					if ($(li_id).is('#proj-list > li:last')) {
+						$("#"+ $(li_id).prev().attr('id') ).children().addClass('proj-li-active'); //I'm sorry
+					} else {
+						$("#"+ $(li_id).next().attr('id') ).children().addClass('proj-li-active');
+					}
+				});
+
+			//if it's not the currently active proj...
+			} else {
+				$(li_id).slideUp(200, function() {
+					$(li_id).remove();
+					$(projid).remove();
+				});
+			}
+
+			//remove the project, remove its data
+			delete IDs[data[projid.replace("#proj-", "")]["tt"]];
+			delete data[projid.replace("#proj-","")];
+
 		}
 	});
 });

@@ -82,6 +82,11 @@ nav side
 	margin-bottom: 3px;
 }
 
+.proj-li-content {
+	position: relative;
+	height: 100%;
+}
+
 .proj-li-active {
 	background-color: #2ECC71;
 }
