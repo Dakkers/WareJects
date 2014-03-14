@@ -2,42 +2,46 @@
 <html>
 <head>
 	<title>WareJects</title>
-	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
 	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui.js"></script>
-	<script type="text/javascript" src="js/tabs.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
+  <link href="css/flat-ui.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/index.css">
   <link rel="shortcut icon" href="icon.png">
 </head>
 
 <body>
-<button id="add_tab">Add a Project</button>
- 
-<div id="dialog" title="Add a Project">
-  <form>
-    <fieldset class="ui-helper-reset">
-      <label for="tab_title">Project Title</label>
-      <input type="text" name="tab_title" id="tab_title" value="" class="ui-widget-content ui-corner-all" />
-      <label for="tab_content">Description</label>
-      <textarea name="tab_content" id="tab_content" class="ui-widget-content ui-corner-all"></textarea>
-      <label for="tab_lang">Languages</label>
-      <textarea name="tab_lang" id="tab_lang" class="ui-widget-content ui-corner-all"></textarea>
-      <label for="tab_mods">Modules, Libraries, Devices, etc.</label>
-      <textarea name="tab_mods" id="tab_mods" class="ui-widget-content ui-corner-all"></textarea>
-      <label for="tab_time">Starting Time</label>
-      <textarea name="tab_time" id="tab_time" class="ui-widget-content ui-corner-all"></textarea>
-    </fieldset>
-  </form>
+<div id="container">
+
+<h3>WareJects</h3>
+<div id="content">
+
+<div id="projs">
 </div>
- 
-<div id="tabs">
-  <ul>
+
+<div id="nav">
+  <div id="scrollable">
+  <ul id="proj-list">
   </ul>
+  </div>
+
+  <div id="btns">
+    <button id="btn-edit" class="btn btn-lg btn-block btn-inverse">Edit</button>
+    <button id="btn-save" class="btn btn-lg btn-block btn-inverse">Save</button>
+    <button id="btn-add" class="btn btn-lg btn-block btn-inverse">Add</button>
+    <div id="proj-crt">
+      <input id="proj-crt-tt" class="form-control proj-crt-in" placeholder="Project Title"><br>
+      <textarea id="proj-crt-desc" class="proj-crt-in" placeholder="Description" rows="3"></textarea>
+      <input type="text" id="proj-crt-lng" class="form-control proj-crt-in" placeholder="Languages">
+      <input type="text" id="proj-crt-mod" class="form-control proj-crt-in" placeholder="Libraries, Devices, etc.">
+      <input type="text" id="proj-crt-time" class="form-control proj-crt-in" placeholder="Starting Time">
+      <button id="btn-crt" class="btn btn-lg btn-block btn-primary">Create</button>
+    </div> 
+  </div>
 </div>
 
-<button class="savebutton">Save</button> <button class="editbutton">Edit</button>
 
+
+</div>
+</div>
 </body>
-
 </html>

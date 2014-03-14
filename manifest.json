@@ -1,14 +1,14 @@
 {
  "name": "WareJects",
- "version": "1.1",
+ "version": "1.3",
  "description": "Manage your software and hardware project ideas.",
 
- "permissions": [ "tabs", "https://*/*", "http://*/*"],
+ "permissions": [ "storage", "tabs", "https://*/*", "http://*/*"],
 
  "content_scripts": [
   {
   "matches": ["https://*/*"],
-  "js" : ["js/jquery.min.js", "js/popup.js", "js/main.js", "js/tabs.js"]
+  "js" : ["js/jquery.min.js", "js/popup.js", "js/main.js"]
   }
  ],
 

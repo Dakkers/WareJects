@@ -1,216 +1,231 @@
-var edit = true;
-var editingHandler = [];
-var idsHandler = [];
-tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>";
+//data holds all the project data, IDs assigns a number to each project (for easy jQuery manipulation)
+var data = {"1": {"tt": "WareJects", "desc": "A Chrome extension that allows the user to organize their software and hardware project ideas.", 
+					"lng": "JavaScript, HTML, CSS", "mod": "jQuery", "time": "when it's feasible!"}}, IDs = {"WareJects": "1"}, maxID, activetab, IDnums = [];
+var editing = false;
+var boxes = ['tt', 'desc', 'lng', 'mod', 'time'];
 
-function setshowp (id, classname, textval) {
-	//sets the paragraph tag and shows it
-	$(id).children(classname).html(textval.replace(/\n/g, "<br>"));
-	$(id).children(classname).show(1, function () {});
-};
 
-function setDescTextarea (id, textval) {
-	//sets and adds description textarea if first time pressing edit - didn't need a function for this, but fuck it
-	$(id).children(".hdesc").after("<textarea class='editdesc'>" + textval + "</textarea>");
-	$(id).children(".editdesc").height( $(".editdesc")[0].scrollHeight );
-};
 
-function setOtherTextarea (id, headername, classname, textval) {
-	//sets and adds lang or mods textarea if first time pressing edit
-	$(id).children(headername).after("<textarea class='" + classname + "' rows='1'>" + textval + "</textarea>");
-	$(id).children("." + classname).height( $("." + classname)[0].scrollHeight );
-};
 
-function showTextarea (id, classname, textval) {
-	//shows textarea tag if not first time pressing button
-	$(id).children(classname).text(textval);
-	$(id).children(classname).show(1, function () {});
-};
-
-function editingScript (id) {
-	/*This script is activated when the Edit button is clicked or, if the textareas are active,
-	when the active tab is changed. On first button press, create the textareas and add them to
-	the HTML and show them, right after hiding the paragraph tags. On every other button press,
-	hide the textarea tag and show the paragraph tags.*/
-	edit = !edit;
-	if (edit) {
-		//clicking the Done button
-		var nametext = $(id).children('.editname').val();
-		var desctext = $(id).children('.editdesc').val(); //get values of current textareas
-		var langtext = $(id).children('.editlang').val();
-		var modstext = $(id).children('.editmods').val();
-		var timetext = $(id).children('.edittime').val();
-		$(".editbutton").text('Edit');
-		$(id).children(".editname").hide(1, setshowp(id, ".pname", nametext));
-		$(id).children(".editdesc").hide(1, setshowp(id, ".pdesc", desctext));  //call setshowp upon hiding
-		$(id).children(".editlang").hide(1, setshowp(id, ".plang", langtext));
-		$(id).children(".editmods").hide(1, setshowp(id, ".pmods", modstext));
-		$(id).children(".edittime").hide(1, setshowp(id, ".ptime", timetext));
-		$('.savebutton').removeAttr('disabled');
-		$("a[href='" + id + "']").text(nametext); //change tab name too
-		tabs.tabs("refresh");
-	}
-	else {
-		//clicking the Edit button
-		var nametext = $(id).children(".pname").text(); //get values of current paragraphs
-		var desctext = $(id).children(".pdesc").text();
-		var langtext = $(id).children(".plang").text();
-		var modstext = $(id).children(".pmods").text();
-		var timetext = $(id).children(".ptime").text();
-		$(".editbutton").text('Done');
-		$('.savebutton').attr('disabled', 'true'); //do not allow saving while editing
-
-		if ($.inArray(id, editingHandler) === -1) {
-			//first time pressing edit in this session
-			$(id).children(".pname").hide(1, setOtherTextarea(id, '.hname', 'editname', nametext)); //call setTextarea functions upon hiding
-			$(id).children(".pdesc").hide(1, setDescTextarea(id, desctext));
-			$(id).children(".plang").hide(1, setOtherTextarea(id, '.hlang', 'editlang', langtext));
-			$(id).children(".pmods").hide(1, setOtherTextarea(id, '.hmods', 'editmods', modstext));
-			$(id).children(".ptime").hide(1, setOtherTextarea(id, '.htime', 'edittime', timetext));
-			editingHandler.push(id);
-		}
-		else {
-			//not first time pressing edit in this session
-			$(id).children(".pname").hide(1, showTextarea(id, ".editname", nametext));
-			$(id).children(".pdesc").hide(1, showTextarea(id, ".editdesc", desctext));
-			$(id).children(".plang").hide(1, showTextarea(id, ".editlang", langtext));
-			$(id).children(".pmods").hide(1, showTextarea(id, ".editmods", modstext));
-			$(id).children(".ptime").hide(1, showTextarea(id, ".edittime", timetext));
-		}
+function proj_div_tag(title, descrip, lang, modules, starttime, initial_load, idnumber) {
+	//create a <div> tag for the project data (or create its child)
+	//if initial_load is true (user is loading warejects), return entire div tag
+	//if initial_load is false (user is adding a project), return child (as div must be created and hidden pre-)
+	var contenttobeadded =
+		["<h4>Project Title</h4><p class='proj-tt'>" + title + "</p>",
+		"<h4>Description</h4><p class='proj-desc'>" + descrip.replace(/\n/g, "<br>") + "</p>",
+		"<h4>Languages</h4><p class='proj-lng'>" + lang + "</p>",
+		"<h4>Libraries, Devices, etc.</h4><p class='proj-mod'>" + modules + "</p>",
+		"<h4>Starting Time</h4><p class='proj-time'>" + starttime + "</p>"].join('\n');
+	if (initial_load) {
+		return "<div id='proj-"+ idnumber +"' class='proj-inactive proj'>"+ contenttobeadded +"</div>";
+	} else {
+		return contenttobeadded;
 	}
 }
 
-function updateProjs() {
-	/*This function checks all of the anchor tags and gets the text from them. The text is
-	then appended to an array. Why? Because all of the anchor tags in the HTML code are 
-	actually the project names. The array is then returned.
+function proj_li_tag(title, initial_load, idnumber) {
+	//create a <li> tag for the project title
+	//if initial_load is true (user is loading warejects), <li> will not be hidden and <ul> will slide down instead
+	//if initial_load is false (user is adding a project), <li> will be hidden and it itself will slide down
+	if (initial_load) {
+		return "<li id='proj-li-"+idnumber+"'><div class='proj-li'><span class='proj-li-content'>"+ title +"</span><span class='fui-cross'></span></div></li>";
+	} else {
+		return "<li id='proj-li-new'><div class='proj-li'><span class='proj-li-content'>"+ title +"</span><span class='fui-cross'></span></div></li>";
+	}
+}
 
-	Note: we can't just iterate through the array of IDs (#tabs-0, ... etc) because the 
-	order of the anchor tags will change if the tabs are sorted differently. The IDs array
-	will always be in the order of increasing ID numbers.*/
-	array = [];
-	var ancs = $("a").each( function () {
-		array.push($(this).text());
-	});
-	return array;
+function add_textarea_html(idnumber) {
+	//create the textareas inside the html
+	for (var i=0; i<boxes.length; i++ ) {
+		$("#proj-"+ idnumber +" > .proj-" + boxes[i]).after("<textarea style='display: none;' class='proj-"+ boxes[i] +"-ta' rows='1'></textarea>");
+	}
+	$("#proj-"+ idnumber +" > .proj-desc-ta").attr('rows', '3');
+}
+
+function save(title, descrip, lang, mods, starttime, idnumber, data_container, IDs_container) {
+	//save stuff to localStorage
+	data_container[idnumber] = {"tt": title, "desc": descrip, "lng": lang, "mod": mods, "time": starttime}
+	IDs_container[title] = idnumber;
+	localStorage["warejects"] = JSON.stringify({"data": data_container, "IDs": IDs_container});
 }
 
 
 
+$(window).load(function() {
 
-$(document).ready(function() {
 
-	//localStorage["projlist"] = updateProjs().join(" ^%^ ");
-	var tabs = $( "#tabs" ).tabs();
+	if (typeof localStorage["warejects"] != "undefined") {
+		//if warejects has been loaded before, get project data and IDs
+		data = JSON.parse(localStorage["warejects"])["data"];
+		IDs = JSON.parse(localStorage["warejects"])["IDs"];
+		activetab = parseInt(localStorage["warejects-activetab"]);
 
-	if  (typeof localStorage["$$__nothinglikethefirstsave__$$"] === "undefined") {
-		//this runs if the user hasn't hit the savebutton yet; loads default WareJects info
-		label = "WareJects"; //proj title
-		li = $( tabTemplate.replace( /#\{href\}/g, "#tabs-0" ).replace( /#\{label\}/g, label ) );
-		tabNameHtml = "<h2 class='hname'>Project Title</h2><p class='pname'>WareJects</p>";
-		tabContentHtml = "<h2 class='hdesc'>Rough Idea</h2><p class='pdesc'>A Chrome extension that allows the user to manage their software and hardware project ideas. Should have a simple tabbing system (maybe refer to jQuery UI instead of building one from scratch?), a section for languages the user may write it in (if any), a section for tools (MakeyMakey, Raspberry Pi...) or modules (Flask, jQuery...), and a section for the description of the project.</p>";
-		tabLangHtml = "<h2 class='hlang'>Languages</h2><p class='plang'>JavaScript, HTML, CSS</p>";
-		tabModsHtml = "<h2 class='hmods'>Modules, Libraries, Devices, etc.</h2><p class='pmods'>jQuery, jQuery UI</p>";
-		tabTimeHtml = "<h2 class='htime'>Starting Time</h2><p class='ptime'>Sometime in October?</p>";
-		tabs.find( ".ui-tabs-nav" ).append( li );
-		tabs.append( "<div id='tabs-0'>" + tabNameHtml + tabContentHtml + tabLangHtml + tabModsHtml + tabTimeHtml + "</div>" );
-		$( "#tabs" ).tabs( "option", "active", 0 );
-		tabs.tabs( "refresh" );
-		localStorage["lastactivetab"] = "0";
+	} else {
+		//if warejects hasn't been loaded before, create data in local storage for it
+		localStorage["warejects"] = JSON.stringify({"data": data, "IDs": IDs});
+		activetab = "1";
+		localStorage["warejects-activetab"] = activetab;
 	}
 
+	//get project titles, their ID-numbers, largest ID number, and sort project titles alphabetically
+	var proj_tts = Object.keys(IDs);
+	for (var i=0; i < proj_tts.length; i++) {IDnums.push(parseInt(IDs[proj_tts[i]]));}
+	proj_tts.sort();
+	maxID = Math.max.apply(Math, IDnums);
+
+	for (var i=0; i<proj_tts.length; i++) {
+		//get proj data
+		var tt = proj_tts[i];
+		var IDnum = IDs[tt];
+		var desc = data[IDnum]["desc"], lng = data[IDnum]["lng"], mod = data[IDnum]["mod"], time = data[IDnum]["time"];
+
+		//add proj data to projectlist and project section
+		$("#proj-list").append(proj_li_tag(tt, true, IDnum));
+		$("#projs").append(proj_div_tag(tt, desc, lng, mod, time, true, IDnum));
+
+		//add textarea HTML
+		add_textarea_html(IDnum);
+	}
+
+
+	//after projects have been added, make project list slide down
+	$("#proj-"+activetab).removeClass('proj-inactive').addClass('proj-active');
+	$("#proj-li-"+ activetab +" > .proj-li").addClass('proj-li-active');
+	$("#content").slideDown(400);
 	
-	else if (localStorage["projlist"].split(" ^%^ ").length != 0) {
-
-		//localStorage["projlist"] = updateProjs().join(" ^%^ ");
-		projsInStorage = localStorage["projlist"].split(" ^%^ ");
-
-		for (var i=0; i < projsInStorage.length; i++ ) {
-
-			idhere = "tabs-" + i.toString();
-			label = projsInStorage[i]; //proj title
-			li = $( tabTemplate.replace( /#\{href\}/g, "#" + idhere ).replace( /#\{label\}/g, label ) );
-
-			tabNameHtml =  "<h2 class='hname'>Project Title</h2><p class='pname'>" + label + "</p>";
-			tabContentHtml = "<h2 class='hdesc'>Rough Idea</h2><p class='pdesc'>" + localStorage[label + "-_-desc"] + "</p>";
-			tabLangHtml = "<h2 class='hlang'>Languages</h2><p class='plang'>" + localStorage[label + "-_-lang"] + "</p>";
-			tabModsHtml = "<h2 class='hmods'>Modules, Libraries, Devices, etc.</h2><p class='pmods'>" + localStorage[label + "-_-mods"] + "</p>";
-			tabTimeHtml = "<h2 class='htime'>Starting Time</h2><p class='ptime'>" + localStorage[label + "-_-time"] + "</p>";
-
-			tabs.find( ".ui-tabs-nav" ).append( li );
-			tabs.append( "<div id='" + idhere + "'>" + tabNameHtml + tabContentHtml + tabLangHtml + tabModsHtml + tabTimeHtml + "</div>" );
-			tabs.tabs( "refresh" );
-			window.tabCounter++;
-		}
-
-	}
 
 
-	localStorage["projlist"] = updateProjs().join(" ^%^ ");
-	$("#tabs").tabs("option", "active", parseInt(localStorage["lastactivetab"]));
-	id = "#tabs-" + localStorage["lastactivetab"];
+	$("#btn-edit").click(function() {
+		/*This is for when the user edits their project.*/
+		var thisid = $(".proj-active").attr('id');
+		editing = !editing;
 
-	$("#tabs").tabs({
-		beforeActivate: function (event, ui) {
-			//this function is called before switching to a new tab
+		//change text of edit button
+		if (editing) { 
+			$("#btn-edit").text('Done');
 
-			if (!edit) {
-				//disable the textareas if they are still open upon switching tabs
-				editingScript(id);
+			for (var i=0; i<boxes.length; i++) {
+				var box = boxes[i];
+				var ptag = "#"+thisid+" > .proj-"+box, tatag = "#"+thisid+" > .proj-"+box+"-ta";
+				$(tatag).text($(ptag).text());
+				$(ptag).hide();
+				$(tatag).show();
+				$("#btn-add").attr('disabled', 'disabled');
+				$("#btn-crt").attr('disabled', 'disabled');
+				$("#btn-save").attr('disabled', 'disabled');
 			}
 
-			id = "#" + ui.newPanel.attr('id');
-
-			if ($.inArray(id, idsHandler) === -1 ) {
-				//if the tab ID is not in the array of IDs, add it
-				idsHandler.push(id);
+		} else { 
+			$("#btn-edit").text('Edit');
+			for (var i=0; i<boxes.length; i++) {
+				var box = boxes[i];
+				var ptag = "#"+idnumber+" > .proj-"+box, tatag = "#"+idnumber+" > .proj-"+box+"-ta";
+				$(ptag).html($(tatag).val().replace(/\n/g, "<br>"));
+				$(tatag).hide();
+				$(ptag).show();
+				//$("#proj-li-"+thisid.replace("proj-", "")+ " > .proj-li-content").text($(tatag).val()); //change <li>
+				$("#btn-add").removeAttr('disabled');
+				$("#btn-crt").removeAttr('disabled');
+				$("#btn-save").removeAttr('disabled');
 			}
-
-			projnames = updateProjs();
 		}
+
 	});
 
-	$("#tabs").tabs({
-		activate: function (event, ui) {
-			//save what the last active tab was
-			localStorage["lastactivetab"] = $( "#tabs" ).tabs( "option", "active" ).toString();
-		}
-	})
 
-	$('.savebutton').click(function() {
-		//savebutton saves to HTML5 localStorage
-		localStorage["$$__nothinglikethefirstsave__$$"] = "true"; //the user has hit the save button once
-		projnames = updateProjs();
-		projsInStorage = localStorage["projlist"].split(" ^%^ ");
-		
-		for (var i = 0; i < projsInStorage.length; i++) {
-			if ($.inArray(projsInStorage[i], projnames) === -1) {
-				//check to see if any projects have been deleted by comparing array of project names to those in storage -
-				//if so, remove the desc/lang/mods text
-				localStorage.removeItem(projsInStorage[i] + "-_-desc");
-				localStorage.removeItem(projsInStorage[i] + "-_-lang");
-				localStorage.removeItem(projsInStorage[i] + "-_-mods");
-				localStorage.removeItem(projsInStorage[i] + "-_-time");
-			}
-		}
+	$("#btn-save").click(function() {
+		//add stuff to localStorage
+		$(".proj").each(function() {
+			var projID = $(this).attr('id');
+			var tt = $("#"+projID+ " > .proj-tt").text(), desc = $("#"+projID+" > .proj-desc").text(), lng = $("#"+projID+" > .proj-lng").text();
+			var mod = $("#"+projID+" > .proj-mod").text(), time = $("#"+projID+" > .proj-time").text();
+			save(tt, desc, lng, mod, time, projID.replace("proj-", ""), data, IDs);
+		});
+	});
 
-		localStorage["projlist"] = projnames.join(" ^%^ "); //now update storage list
 
-		for (var i = 0; i < projnames.length; i++) {
-			$("a").each(function() {
-				if ($(this).text() === projnames[i]) {
-					id = $(this).attr('href');
-					name = $(this).text();
-					localStorage[name + "-_-desc"] = $(id).children('.pdesc').text();
-					localStorage[name + "-_-lang"] = $(id).children('.plang').text();
-					localStorage[name + "-_-mods"] = $(id).children('.pmods').text();
-					localStorage[name + "-_-time"] = $(id).children('.ptime').text();
-				}
+	$("#btn-add").click(function() {
+		//make the input field slide down when "Add" button is pressed
+		$("#proj-crt").slideDown(400);
+	});
+
+
+	$("#btn-crt").on('click', function() {
+		/*This is for when the user creates a project, i.e. presses "Create".*/
+
+		//grab input vales and create content for div, also update maxID each creation
+		maxID = Math.max.apply(Math, IDnums);
+		var tt = $("#proj-crt-tt").val(), desc = $("#proj-crt-desc").val(), lng = $("#proj-crt-lng").val();
+		var mod = $("#proj-crt-mod").val(), time = $("#proj-crt-time").val();
+		var projID = (maxID + 1).toString();
+		var contenttobeadded = proj_div_tag(tt, desc, lng, mod, time, false, null);
+
+		//create list item, slide it down, give it a proper ID
+		$("#proj-list").append(proj_li_tag(tt, false, null));
+		$("#proj-li-new").slideDown(400);
+		$("#proj-li-new").attr('id', "proj-li-"+projID);
+
+		//create empty div, hide it, THEN add its content because something wasn't loading properly
+		$("#projs").append("<div id='proj-" + projID + "'></div>");
+		newprojID = "#proj-" + projID;
+		$(newprojID).hide();
+		$(newprojID).append(contenttobeadded);
+
+		//make the current project disappear and make the new project appear
+		$(".proj-active").slideUp(400, function() {
+			$(".proj-active").addClass('proj-inactive').removeClass('proj-active');
+			$(newprojID).slideDown(400, function() {
+				$(newprojID).addClass('proj-active');
 			});
-		}
+		});
+
+		//make the inputs slide up and make them empty
+		$("#proj-crt").slideUp(400, function() {
+			$(".proj-crt-in").each(function() {
+				$(this).val('');
+			});
+		});
+
+		//change active <li>
+		$('.proj-li-active').removeClass("proj-li-active");
+		$("#proj-li-"+ (maxID+1).toString() + " > .proj-li").addClass("proj-li-active");
+
+		//save the new stuff, add the textarea HTML, update last active projects
+		save(tt, desc, lng, mod, time, projID, data, IDs);
+		add_textarea_html(projID);
+		localStorage["warejects-activetab"] = (maxID+1).toString();
+
 	});
+
+
+
 	
-	$('.editbutton').click(function() {
-		editingScript(id);
+	$("#proj-list").on('click', "li", function() {
+		/*This is for when the user switches projects (clicks on the list).*/
+
+		//make sure user is not currently editing a project
+		if (!editing) {
+			var li_id = "#"+$(this).attr('id');     //e.g. #proj-li-3
+			var projid = li_id.replace("li-", "");  //e.g. #proj-3
+
+			if ($('.proj-active').attr('id') !== projid.replace("#","")) {
+				//change colour of <li>
+				$('.proj-li-active').removeClass("proj-li-active");
+				$(li_id + " > .proj-li").addClass("proj-li-active");
+
+				//load different project
+				$(".proj-active").slideToggle(300, function() {
+					$(".proj-active").addClass('proj-inactive').removeClass('proj-active');
+					$(projid).slideToggle(300, function() {
+						$(projid).addClass('proj-active').removeClass('proj-inactive');
+					});
+				});
+			}
+
+			//change the new last active tab
+			activetab = projid.replace("#proj-", "");
+			localStorage["warejects-activetab"] = activetab;
+		}
 	});
 });

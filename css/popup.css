@@ -3,37 +3,53 @@
 general stuff
 ===============
 */
-
 body {
 	width: 300px;
-	font-family: "Trebuchet MS", "Times New Roman", Serif;
-	background-image: -webkit-radial-gradient(rgb(50,50,50), black);
-	color: white;
+	min-height: 305px;
+}
+
+#container {
+	margin: auto;
+	width: 100%;
 	text-align: center;
 }
 
-h1 {
-	font-size: 30px;
-	margin: 0;
+h3 {
+	text-align: center;
+	margin-top: 0;
 }
 
-ul {
-	padding: 0;
+button {
+	width: 200px;
 }
 
-li {
-	list-style-type: none;
-	padding: 0 0 5px 10px;
+
+/*
+===============
+=home
+===============
+*/
+#home {
+	text-align: center;
+
 }
 
-li:hover {
-	text-shadow: 1px 1px 10px white;
-	cursor: pointer;
+
+/*
+===============
+=other divs
+===============
+*/
+#about, #login, #import, #issue {
+	display: none;
 }
 
-img {
+p, li span {
+	font-size: 16px;
+}
+
+li span {
 	position: relative;
-	left: 6px;
-	width: 150px;
-	height: 100px;
+	left: -10px;
+	padding-left: 5px;
 }
