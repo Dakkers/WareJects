@@ -43,11 +43,12 @@ function add_textarea_html(idnumber) {
 	$("#proj-"+ idnumber +" > .proj-desc-ta").attr('rows', '3');
 }
 
-function save(title, descrip, lang, mods, starttime, idnumber, data_container, IDs_container) {
+function save(title, descrip, lang, mods, starttime, idnumber, data_container, IDs_container, lastactivetab) {
 	//save stuff to localStorage
 	data_container[idnumber] = {"tt": title, "desc": descrip, "lng": lang, "mod": mods, "time": starttime}
 	IDs_container[title] = idnumber;
 	localStorage["warejects"] = JSON.stringify({"data": data_container, "IDs": IDs_container});
+	localStorage["warejects-activetab"] = lastactivetab;
 }
 
 
@@ -140,8 +141,8 @@ $(window).load(function() {
 			console.log(this);
 			var projID = $(this).attr('id');
 			var tt = $("#"+projID+ " > .proj-tt").text(), desc = $("#"+projID+" > .proj-desc").text(), lng = $("#"+projID+" > .proj-lng").text();
-			var mod = $("#"+projID+" > .proj-mod").text(), time = $("#"+projID+" > .proj-time").text();
-			save(tt, desc, lng, mod, time, projID.replace("proj-", ""), data, IDs);
+			var mod = $("#"+projID+" > .proj-mod").text(), time = $("#"+projID+" > .proj-time").text(); activetab = $(".proj-active").attr('id').replace("proj-","");
+			save(tt, desc, lng, mod, time, projID.replace("proj-", ""), data, IDs, activetab);
 		});
 	});
 
@@ -175,7 +176,7 @@ $(window).load(function() {
 		$("#proj-li-new").attr('id', "proj-li-"+projID);
 
 		//create empty div, hide it, THEN add its content because something wasn't loading properly
-		$("#projs").append("<div id='proj-" + projID + "'></div>");
+		$("#projs").append("<div id='proj-" + projID + "' class='proj'></div>");
 		newprojID = "#proj-" + projID;
 		$(newprojID).hide();
 		$(newprojID).append(contenttobeadded);
@@ -200,10 +201,9 @@ $(window).load(function() {
 		$('.proj-li-active').removeClass("proj-li-active");
 		$("#proj-li-"+ (maxID+1).toString() + " > .proj-li").addClass("proj-li-active");
 
-		//save the new stuff, add the textarea HTML, update last active projects
-		save(tt, desc, lng, mod, time, projID, data, IDs);
+		//save the new stuff, add the textarea HTML
+		save(tt, desc, lng, mod, time, projID, data, IDs, projID);
 		add_textarea_html(projID);
-		localStorage["warejects-activetab"] = (maxID+1).toString();
 		$("#btn-add").removeAttr('disabled');
 
 	});
@@ -211,8 +211,9 @@ $(window).load(function() {
 	
 	$("#proj-list").on('click', "li", function(e) {
 		/*This is for when the user switches projects (clicks on the list).*/
+		console.log(e.target.className);
 
-		//make sure user is not currently editing a project and that the X wasn't clicked instead
+		//make sure user is not currently editing a project or that the X wasn't clicked instead
 		if ((!editing) && (e.target.className !== 'fui-cross')) {
 			var li_id = "#"+$(this).attr('id');     //e.g. #proj-li-3
 			var projid = li_id.replace("li-", "");  //e.g. #proj-3
