@@ -5,7 +5,13 @@ var editing = false;
 var boxes = ['tt', 'desc', 'lng', 'mod', 'time'];
 
 
-
+function get_key(d,val) {
+	for (key in d) {
+		if (d[key] == val) {
+			return key;
+		}
+	}
+}
 
 function proj_div_tag(title, descrip, lang, modules, starttime, initial_load, idnumber) {
 	//create a <div> tag for the project data (or create its child)
@@ -45,7 +51,9 @@ function add_textarea_html(idnumber) {
 
 function save(title, descrip, lang, mods, starttime, idnumber, data_container, IDs_container, lastactivetab) {
 	//save stuff to localStorage
-	data_container[idnumber] = {"tt": title, "desc": descrip, "lng": lang, "mod": mods, "time": starttime}
+	var thekey = get_key(IDs_container, idnumber);
+	data_container[idnumber] = {"tt": title, "desc": descrip, "lng": lang, "mod": mods, "time": starttime};
+	delete IDs_container[thekey];
 	IDs_container[title] = idnumber;
 	localStorage["warejects"] = JSON.stringify({"data": data_container, "IDs": IDs_container});
 	localStorage["warejects-activetab"] = lastactivetab;
@@ -99,7 +107,7 @@ $(window).load(function() {
 
 	$("#btn-edit").click(function() {
 		/*This is for when the user edits their project.*/
-		var thisid = $(".proj-active").attr('id');
+		var thisid = $(".proj-active").attr('id'); //e.g. proj-2
 		editing = !editing;
 
 		//change text of edit button
@@ -108,7 +116,8 @@ $(window).load(function() {
 
 			for (var i=0; i<boxes.length; i++) {
 				var box = boxes[i];
-				var ptag = "#"+thisid+" > .proj-"+box, tatag = "#"+thisid+" > .proj-"+box+"-ta";
+				var ptag = "#"+thisid+" > .proj-"+box;
+				var tatag = "#"+thisid+" > .proj-"+box+"-ta";
 				$(tatag).text($(ptag).text());
 				$(ptag).hide();
 				$(tatag).show();
@@ -119,13 +128,16 @@ $(window).load(function() {
 
 		} else { 
 			$("#btn-edit").text('Edit');
+			var ohgodwhy = "#"+thisid+" > .proj-"+boxes[0]+"-ta";
+			$("#proj-li-"+thisid.replace("proj-", "")+ " > .proj-li > .proj-li-content").text($(ohgodwhy).val()); //change <li>
+
 			for (var i=0; i<boxes.length; i++) {
 				var box = boxes[i];
-				var ptag = "#"+thisid+" > .proj-"+box, tatag = "#"+thisid+" > .proj-"+box+"-ta";
+				var ptag = "#"+thisid+" > .proj-"+box;
+				var tatag = "#"+thisid+" > .proj-"+box+"-ta";
 				$(ptag).html($(tatag).val().replace(/\n/g, "<br>"));
 				$(tatag).hide();
 				$(ptag).show();
-				//$("#proj-li-"+thisid.replace("proj-", "")+ " > .proj-li-content").text($(tatag).val()); //change <li>
 				$("#btn-add").removeAttr('disabled');
 				$("#btn-crt").removeAttr('disabled');
 				$("#btn-save").removeAttr('disabled');
@@ -148,8 +160,11 @@ $(window).load(function() {
 
 
 	$("#btn-add").on('click', function() {
-		//make the input field slide down when "Add" button is pressed
-		$("#proj-crt").slideDown(400);
+		//make the input field slide up or down when "Add" button is pressed
+		$("#proj-crt").slideToggle(400);
+		$(".proj-crt-in").eac(function() {
+			$(this).val('');
+		});
 	});
 
 
@@ -167,8 +182,6 @@ $(window).load(function() {
 		var projID = (maxID + 1).toString();
 		IDnums.push(parseInt(projID));
 		var contenttobeadded = proj_div_tag(tt, desc, lng, mod, time, false, null);
-
-		console.log(maxID); console.log(IDnums);
 
 		//create list item, slide it down, give it a proper ID
 		$("#proj-list").append(proj_li_tag(tt, false, null));
@@ -211,7 +224,6 @@ $(window).load(function() {
 	
 	$("#proj-list").on('click', "li", function(e) {
 		/*This is for when the user switches projects (clicks on the list).*/
-		console.log(e.target.className);
 
 		//make sure user is not currently editing a project or that the X wasn't clicked instead
 		if ((!editing) && (e.target.className !== 'fui-cross')) {

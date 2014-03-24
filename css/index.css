@@ -20,6 +20,7 @@ h3 {
 	font-size: 28px;
 	margin-top: 0;
 	margin-left: -1%;
+	margin-bottom: 0;
 }
 
 /*
@@ -54,12 +55,13 @@ nav side
 #nav {
 	float: right;
 	width: 30%;
+	margin-top: -1.4%;
 }
 
 #scrollable {
 	overflow: auto;
 	overflow-y: scroll;
-	max-height: 400px;
+	max-height: 300px;
 }
 
 #scrollable::-webkit-scrollbar {
@@ -73,7 +75,7 @@ nav side
 }
 
 .proj-li {
-	background-color: #34495E;
+	background-color: #2C3E50;
 	color: #ECF0F1;
 	border: 1px solid #7F8C8D;
 	border-radius: 4px;
@@ -88,7 +90,7 @@ nav side
 }
 
 .proj-li-active {
-	background-color: #2ECC71;
+	background-color: #2980B9;
 }
 
 #proj-li-new {
@@ -119,6 +121,7 @@ buttons
 
 .proj-crt-in {
 	width: 90%;
+	padding: 0 12px;
 }
 
 #proj-crt-desc, .proj-active textarea, .proj-inactive textarea {
